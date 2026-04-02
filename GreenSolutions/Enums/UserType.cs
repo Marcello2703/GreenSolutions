@@ -3,8 +3,6 @@
     public enum UserType
     {
         Admin,
-        Regular,
-        FiliatedLocal,
-        FiliatedForeign
+        Employee
     }
 }

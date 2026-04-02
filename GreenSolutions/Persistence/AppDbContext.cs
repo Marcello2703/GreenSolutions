@@ -7,6 +7,8 @@ namespace GreenSolutions.Persistence
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<User> UserDB { get; set;  }
+        public DbSet<User> UsersDB { get; set;  }
+
+        public DbSet<Client> ClientDB { get; set; }
     }
 }
