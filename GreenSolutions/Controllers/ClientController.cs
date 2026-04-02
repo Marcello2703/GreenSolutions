@@ -19,7 +19,7 @@ namespace GreenSolutions.Controllers
         [HttpPost]
         public async Task<IActionResult> AddClient(Client client)
         {
-            _appDbContext.ClientDB.Add(client);
+            _appDbContext.ClientsDB.Add(client);
             await _appDbContext.SaveChangesAsync();
 
             return Ok(client);
@@ -28,8 +28,8 @@ namespace GreenSolutions.Controllers
         [HttpGet("getAllClients")]
         public async Task<ActionResult<IEnumerable<Client>>> GetAllClients()
         {
-            var clients = await _appDbContext.ClientDB.ToListAsync();
-            if (clients == null) { return NotFound("Não existem clientes."); }
+            var clients = await _appDbContext.ClientsDB.ToListAsync();
+            if (!clients.Any()) { return NotFound("Não existem clientes."); }
 
             return Ok(clients);
         }
@@ -37,7 +37,7 @@ namespace GreenSolutions.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Client>>> GetClientById(int id)
         {
-            var client = await _appDbContext.ClientDB.FindAsync(id);
+            var client = await _appDbContext.ClientsDB.FindAsync(id);
 
             if (client == null)
             {
@@ -49,7 +49,7 @@ namespace GreenSolutions.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClient(int id, [FromBody] Client updatedClient)
         {
-            var client = await _appDbContext.ClientDB.FindAsync(id);
+            var client = await _appDbContext.ClientsDB.FindAsync(id);
             if (client == null)
             {
                 return NotFound("Cliente não encontrado.");
@@ -64,13 +64,13 @@ namespace GreenSolutions.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            var client = await _appDbContext.ClientDB.FindAsync(id);
+            var client = await _appDbContext.ClientsDB.FindAsync(id);
             if (client == null)
             {
                 return NotFound("Cliente não encontrado.");
             }
 
-            _appDbContext.ClientDB.Remove(client);
+            _appDbContext.ClientsDB.Remove(client);
             await _appDbContext.SaveChangesAsync();
 
             return Ok("Cliente deletado.");

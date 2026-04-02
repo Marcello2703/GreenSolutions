@@ -1,0 +1,11 @@
+﻿namespace GreenSolutions.DTOs
+{
+    public class CreateBudgetDTO
+    {
+        public int UserId { get; set; }
+        public int ClientId { get; set; }
+
+        public List<BudgetItemDTO> Items { get; set; }
+
+    }
+}

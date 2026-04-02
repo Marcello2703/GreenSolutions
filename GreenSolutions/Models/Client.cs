@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GreenSolutions.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace GreenSolutions.Models
 {
@@ -12,5 +13,6 @@ namespace GreenSolutions.Models
         public string CNPJ { get; set; }
         public string Adress { get; set; }
         public string Phone { get; set; }
+        public ClientType ClientType { get; set; }
     }
 }
