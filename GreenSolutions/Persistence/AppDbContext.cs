@@ -15,5 +15,6 @@ namespace GreenSolutions.Persistence
 
         public DbSet<Budget> BudgetsDB { get; set; }
         public DbSet<BudgetItem> BudgetItemsDB { get; set; }
+        public DbSet<Company> CompaniesDB { get; internal set; }
     }
 }

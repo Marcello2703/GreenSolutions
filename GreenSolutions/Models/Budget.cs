@@ -7,6 +7,8 @@
         public User User { get; set; }
         public int ClientId { get; set; }
         public Client Client { get; set; }
+        public int CompanyId { get; set; }
+        public Company Company { get; set; }
         public DateTime CreatedAt { get; private set; }
         public List<BudgetItem> Items { get; set; } = new List<BudgetItem>();
         public decimal TotalPrice { get; set; }
@@ -15,12 +17,14 @@
         {
             CreatedAt = DateTime.Now;
         }
-        public Budget(int userId, User user, int clientId, Client client, List<BudgetItem> items)
+        public Budget(int userId, User user, int clientId, Client client, int companyId, Company company, List<BudgetItem> items)
         {
             UserId = userId;
             User = user;
             ClientId = clientId;
             Client = client;
+            CompanyId = companyId;
+            Company = company;
             Items = items;
             CreatedAt = DateTime.Now;
         }

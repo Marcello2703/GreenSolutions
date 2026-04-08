@@ -47,10 +47,16 @@ namespace GreenSolutions.Controllers
             var client = await _appDbContext.ClientsDB.FindAsync(dto.ClientId);
             if (client == null)
             {
-                return NotFound("Client não encontrado.");
+                return NotFound("Cliente não encontrado.");
             }
 
-            var budget = new Budget(dto.UserId, user, dto.ClientId, client, new List<BudgetItem>());
+            var company = await _appDbContext.CompaniesDB.FindAsync(dto.CompanyId);
+            if(company == null)
+            {
+                return NotFound("Empresa não encontrada.");
+            }
+
+            var budget = new Budget(dto.UserId, user, dto.ClientId, client, dto.UserId, company, new List<BudgetItem>());
             decimal total = 0;
 
             foreach (var item in dto.Items)
