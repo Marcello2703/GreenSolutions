@@ -1,4 +1,4 @@
-﻿namespace GreenSolutions.DTOs
+﻿namespace GreenSolutions.DTOs.BudgetDTOs
 {
     public class BudgetItemDTO
     {

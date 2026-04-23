@@ -13,6 +13,6 @@ namespace GreenSolutions.Models
         public string CNPJ { get; set; }
         public string Adress { get; set; }
         public string Phone { get; set; }
-        public ClientType ClientType { get; set; }
+        public string State { get; set; }
     }
 }
