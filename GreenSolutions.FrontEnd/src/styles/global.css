@@ -1,11 +1,12 @@
 :root {
     font-family: "Segoe UI", sans-serif;
-    color: #0f172a;
+    color: #1f2c20;
     background: #f8fafc;
   }
   
   * { box-sizing: border-box; }
   body { margin: 0; }
+  a { color: inherit; }
   
   button, input {
     font: inherit;
@@ -17,9 +18,10 @@
     min-height: 100vh;
   }
   
+  .app-sidebar,
   .admin-sidebar {
     padding: 24px;
-    background: #0f172a;
+    background: #1f2c20;
     color: white;
   }
   
@@ -33,20 +35,25 @@
   }
   
   .nav-link {
-    color: #cbd5e1;
+    color: #cbe1cf;
     text-decoration: none;
     padding: 12px 14px;
     border-radius: 10px;
-    background: rgba(255,255,255,0.04);
+    background: #f8f8f81c;
   }
   
   .nav-link--active {
-    background: #1d4ed8;
-    color: white;
+    background: #BFE3C0;
+    color: #1f2c20;
   }
   
   .content {
     padding: 24px;
+  }
+
+  .page-stack {
+    display: grid;
+    gap: 18px;
   }
   
   .section-card {
@@ -60,7 +67,32 @@
     display: flex;
     justify-content: space-between;
     align-items: start;
+    gap: 16px;
     margin-bottom: 24px;
+  }
+
+  .tab-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tab-link {
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #1f2c20;
+    font-weight: 600;
+  }
+
+  .tab-link--active {
+    background: #BFE3C0;
+    color: white;
+  }
+
+  .tab-panel {
+    min-width: 0;
   }
   
   .form-grid {
@@ -85,12 +117,36 @@
     border: 0;
     border-radius: 10px;
     cursor: pointer;
-    background: #1d4ed8;
+    background: #BFE3C0;
     color: white;
   }
   
   .actions button[type="button"] {
-    background: #475569;
+    background: #1f2c20;
+  }
+
+  .primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: #1f2c20;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px dashed #94b8a3;
+    background: #f8fafc;
+  }
+
+  .empty-state p {
+    margin-bottom: 0;
   }
   
   .data-table {
