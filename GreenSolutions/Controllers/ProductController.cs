@@ -32,5 +32,37 @@ namespace GreenSolutions.Controllers
 
             return Ok(products);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] DTOs.ProductDTOs.UpdateProductDTO updatedProduct)
+        {
+            var product = await _appDbContext.ProductsDB.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound("Produto não encontrado.");
+            }
+
+            product.Name = updatedProduct.Name;
+            product.BasePrice = updatedProduct.BasePrice;
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok(product);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _appDbContext.ProductsDB.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound("Produto não encontrado.");
+            }
+
+            _appDbContext.ProductsDB.Remove(product);
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok("Produto deletado.");
+        }
     }
 }

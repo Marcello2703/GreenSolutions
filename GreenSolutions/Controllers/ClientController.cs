@@ -47,13 +47,19 @@ namespace GreenSolutions.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateClient(int id, [FromBody] Client updatedClient)
+        public async Task<IActionResult> UpdateClient(int id, [FromBody] DTOs.ClientDTOs.UpdateClientDTO updatedClient)
         {
             var client = await _appDbContext.ClientsDB.FindAsync(id);
             if (client == null)
             {
                 return NotFound("Cliente não encontrado.");
             }
+
+            client.Name = updatedClient.Name;
+            client.CNPJ = updatedClient.CNPJ;
+            client.Adress = updatedClient.Adress;
+            client.Phone = updatedClient.Phone;
+            client.State = updatedClient.State;
 
             _appDbContext.Entry(client).CurrentValues.SetValues(updatedClient);
             await _appDbContext.SaveChangesAsync();
