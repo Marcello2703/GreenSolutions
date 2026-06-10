@@ -101,10 +101,14 @@
     margin-bottom: 24px;
   }
   
-  .form-grid input {
+  .form-grid input,
+  .form-grid select,
+  .form-grid textarea {
     padding: 12px;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
+    background: white;
+    color: #1f2c20;
   }
   
   .actions {
@@ -159,4 +163,13 @@
     padding: 12px 10px;
     border-bottom: 1px solid #e2e8f0;
     text-align: left;
+  }
+  .data-table select,
+  .data-table button,
+  .data-table input {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: white;
+    color: #1f2c20;
   }

@@ -14,5 +14,9 @@ namespace GreenSolutions.Models
         public string Adress { get; set; }
         public string Phone { get; set; }
         public string State { get; set; }
+
+        //public string email { get; set; }
+
+        //refatorar os objetos? client herdando de user e adicionar campo company em client?
     }
 }

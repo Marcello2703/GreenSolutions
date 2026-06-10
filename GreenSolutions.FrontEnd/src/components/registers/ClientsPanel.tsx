@@ -1,6 +1,6 @@
-import { clientsApi } from "../../services/administration";
+import { clientsApi } from "../../services/clients";
 import { useCrudSection } from "../../hooks/useCrudSection";
-import type { ClientFormData } from "../../types/Administration";
+import type { ClientFormData } from "../../types/Client";
 
 const emptyForm: ClientFormData = {
   name: "",
@@ -18,14 +18,14 @@ export function ClientsPanel() {
       <div className="page-header">
         <div>
           <h1>Clientes</h1>
-          <p>Cadastro, edição, exclusão e visualização de clientes.</p>
+          <p>Cadastro, edicao, exclusao e visualizacao de clientes.</p>
         </div>
       </div>
 
       <form className="form-grid" onSubmit={crud.submit}>
         <input value={crud.form.name} placeholder="Nome" onChange={(e) => crud.setForm({ ...crud.form, name: e.target.value })} />
         <input value={crud.form.cnpj} placeholder="CNPJ" onChange={(e) => crud.setForm({ ...crud.form, cnpj: e.target.value })} />
-        <input value={crud.form.address} placeholder="Endereço" onChange={(e) => crud.setForm({ ...crud.form, address: e.target.value })} />
+        <input value={crud.form.address} placeholder="Endereco" onChange={(e) => crud.setForm({ ...crud.form, address: e.target.value })} />
         <input value={crud.form.phone} placeholder="Telefone" onChange={(e) => crud.setForm({ ...crud.form, phone: e.target.value })} />
         <input value={crud.form.state} placeholder="UF" onChange={(e) => crud.setForm({ ...crud.form, state: e.target.value.toUpperCase() })} />
 

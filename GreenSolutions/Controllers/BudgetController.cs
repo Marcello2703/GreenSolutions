@@ -23,7 +23,7 @@ namespace GreenSolutions.Controllers
         }
 
         // GET: api/<BudgetController>
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetBudgetById(int id)
         {
             var budget = await _appDbContext.BudgetsDB
@@ -75,8 +75,12 @@ namespace GreenSolutions.Controllers
                 Id = b.Id,
                 UserName = b.User.Name,
                 ClientName = b.Client.Name,
-                CompanyName = b.Company.Name
+                CompanyName = b.Company.Name,
+                TotalPrice = b.TotalPrice,
+                CreatedAt = b.CreatedAt,
             }).ToList();
+
+            //add items to the response
 
             return Ok(budgetsDTO);
         }
@@ -85,11 +89,11 @@ namespace GreenSolutions.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBudget([FromBody] CreateBudgetDTO dto)
         {
-            if (dto.Items == null || !dto.Items.Any())
-                return BadRequest("O orçamento precisa ter pelo menos um item.");
-
-            if (dto.Items.Any(i => i.Quantity <= 0))
-                return BadRequest("Todos os itens precisam ter quantidade maior que zero.");
+            if (dto == null)
+                return BadRequest("Payload inválido.");
+      
+            if (dto.Items == null || dto.Items.Count == 0 || dto.Items.Any(i => i.Quantity <= 0))
+                return BadRequest("O orçamento precisa ter pelo menos um item válido.");
 
             var user = await _appDbContext.UsersDB.FindAsync(dto.UserId);
             if(user == null)
@@ -110,11 +114,10 @@ namespace GreenSolutions.Controllers
             }
 
             //Recupera os produtos do orçamento para calcular os preços
-            var productIds = dto.Items.Select(i => i.ProductId).ToList();
+            var productIds = dto.Items.Select(i => i.ProductId).Distinct().ToList();
             var products = await _appDbContext.ProductsDB.Where(p => productIds.Contains(p.Id)).ToListAsync();
 
-            var budget = new Budget(dto.UserId, user, dto.ClientId, client, dto.CompanyId, company, new List<BudgetItem>());
-            var budget2 = new Budget
+            var budget = new Budget
             {
                 UserId = dto.UserId,
                 User = user,
@@ -151,7 +154,25 @@ namespace GreenSolutions.Controllers
             _appDbContext.BudgetsDB.Add(budget);
             await _appDbContext.SaveChangesAsync();
 
-            return Ok(budget);
+            var responseDTO = new BudgetResponseDTO
+            {
+                Id = budget.Id,
+                CreatedAt = budget.CreatedAt,
+                TotalPrice = budget.TotalPrice,
+                ClientName = budget.Client.Name,
+                CompanyName = budget.Company.Name,
+                UserName = budget.User.Name,
+                Items = budget.Items.Select(i => new BudgetItemResponseDTO
+                {
+                    ProductId = i.ProductId,
+                    ProductName = products.First(p => p.Id == i.ProductId).Name,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    TotalPrice = i.TotalPrice
+                }).ToList()
+            };
+
+            return Ok(responseDTO);
         }
 
         //mover depois pra outra controller e filtras os dados enviados pro front

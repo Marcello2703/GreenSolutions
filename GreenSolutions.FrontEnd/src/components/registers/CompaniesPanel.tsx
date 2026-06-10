@@ -1,6 +1,6 @@
-import { companiesApi } from "../../services/administration";
+import { companiesApi } from "../../services/companies";
 import { useCrudSection } from "../../hooks/useCrudSection";
-import type { CompanyFormData } from "../../types/Administration";
+import type { CompanyFormData } from "../../types/Company";
 
 const emptyForm: CompanyFormData = {
   name: "",
@@ -18,8 +18,8 @@ export function CompaniesPanel() {
     <section className="section-card">
       <div className="page-header">
         <div>
-          <h1>Companhias</h1>
-          <p>Empresas próprias e parceiras para uso no orçamento.</p>
+          <h1>Empresas</h1>
+          <p>Empresas proprias e parceiras para uso no orcamento.</p>
         </div>
       </div>
 
@@ -28,11 +28,11 @@ export function CompaniesPanel() {
         <input value={crud.form.cnpj} placeholder="CNPJ" onChange={(e) => crud.setForm({ ...crud.form, cnpj: e.target.value })} />
         <input value={crud.form.email} placeholder="E-mail" onChange={(e) => crud.setForm({ ...crud.form, email: e.target.value })} />
         <input value={crud.form.phone} placeholder="Telefone" onChange={(e) => crud.setForm({ ...crud.form, phone: e.target.value })} />
-        <input value={crud.form.address} placeholder="Endereço" onChange={(e) => crud.setForm({ ...crud.form, address: e.target.value })} />
-        <input value={crud.form.responsible} placeholder="Responsável" onChange={(e) => crud.setForm({ ...crud.form, responsible: e.target.value })} />
+        <input value={crud.form.address} placeholder="Endereco" onChange={(e) => crud.setForm({ ...crud.form, address: e.target.value })} />
+        <input value={crud.form.responsible} placeholder="Responsavel" onChange={(e) => crud.setForm({ ...crud.form, responsible: e.target.value })} />
 
         <div className="actions">
-          <button type="submit">{crud.editingId ? "Salvar companhia" : "Adicionar companhia"}</button>
+          <button type="submit">{crud.editingId ? "Salvar empresa" : "Adicionar empresa"}</button>
           {crud.editingId && <button type="button" onClick={crud.cancelEdit}>Cancelar</button>}
         </div>
       </form>
@@ -44,7 +44,7 @@ export function CompaniesPanel() {
               <th>Nome</th>
               <th>CNPJ</th>
               <th>E-mail</th>
-              <th>Responsável</th>
+              <th>Responsavel</th>
               <th />
             </tr>
           </thead>
@@ -57,7 +57,7 @@ export function CompaniesPanel() {
                 <td>{company.responsible}</td>
                 <td className="actions">
                   <button type="button" onClick={() => crud.startEdit(company)}>Editar</button>
-                  <button type="button" onClick={() => window.confirm("Excluir companhia?") && void crud.remove(company.id)}>Excluir</button>
+                  <button type="button" onClick={() => window.confirm("Excluir empresa?") && void crud.remove(company.id)}>Excluir</button>
                 </td>
               </tr>
             ))}

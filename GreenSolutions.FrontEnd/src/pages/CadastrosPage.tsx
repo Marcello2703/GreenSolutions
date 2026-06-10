@@ -1,6 +1,6 @@
 import { NavLink, Navigate, useParams } from "react-router-dom";
-import { ClientsPanel } from "../components/administration/ClientsPanel";
-import { CompaniesPanel } from "../components/administration/CompaniesPanel";
+import { ClientsPanel } from "../components/registers/ClientsPanel";
+import { CompaniesPanel } from "../components/registers/CompaniesPanel";
 
 type CadastroSection = "clientes" | "empresas";
 

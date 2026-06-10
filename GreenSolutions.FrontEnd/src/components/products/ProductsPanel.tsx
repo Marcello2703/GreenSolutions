@@ -1,7 +1,6 @@
-// src/components/administration/ProductsPanel.tsx
-import { productsApi } from "../../services/administration";
+import { productsApi } from "../../services/products";
 import { useCrudSection } from "../../hooks/useCrudSection";
-import type { ProductFormData } from "../../types/Administration";
+import type { ProductFormData } from "../../types/Product";
 
 const emptyForm: ProductFormData = {
   name: "",
@@ -16,7 +15,7 @@ export function ProductsPanel() {
       <div className="page-header">
         <div>
           <h1>Produtos</h1>
-          <p>Produtos e preços-base usados na geração dos orçamentos.</p>
+          <p>Produtos e precos-base usados na geracao dos orcamentos.</p>
         </div>
       </div>
 
@@ -27,7 +26,7 @@ export function ProductsPanel() {
           min="0"
           step="0.01"
           value={crud.form.basePrice}
-          placeholder="Preço base"
+          placeholder="Preco base"
           onChange={(e) => crud.setForm({ ...crud.form, basePrice: Number(e.target.value) })}
         />
 
@@ -42,7 +41,7 @@ export function ProductsPanel() {
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Preço base</th>
+              <th>Preco base</th>
               <th />
             </tr>
           </thead>
