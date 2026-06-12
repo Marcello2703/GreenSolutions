@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 const links = [
   { to: "/cadastros/clientes", label: "Cadastros" },
   { to: "/produtos", label: "Produtos" },
-  { to: "/orcamentos", label: "Orcamentos" },
+  { to: "/orcamentos", label: "Orçamentos" },
 ];
 
 export function Sidebar() {

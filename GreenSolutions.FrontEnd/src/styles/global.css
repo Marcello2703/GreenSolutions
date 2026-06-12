@@ -127,6 +127,8 @@
   
   .actions button[type="button"] {
     background: #1f2c20;
+    color: white;
+    cursor: pointer;
   }
 
   .primary-link {

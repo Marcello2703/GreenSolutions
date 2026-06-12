@@ -8,7 +8,7 @@ type CompanyApiModel = {
   phone: string;
   email: string;
   cnpj: string;
-  resposible: string;
+  responsible: string;
 };
 
 const mapCompany = (item: CompanyApiModel): Company => ({
@@ -18,7 +18,7 @@ const mapCompany = (item: CompanyApiModel): Company => ({
   phone: item.phone ?? "",
   email: item.email ?? "",
   cnpj: item.cnpj,
-  responsible: item.resposible ?? "",
+  responsible: item.responsible ?? "",
 });
 
 export const companiesApi = {
@@ -33,7 +33,7 @@ export const companiesApi = {
       phone: payload.phone,
       email: payload.email,
       cnpj: payload.cnpj,
-      resposible: payload.responsible,
+      responsible: payload.responsible,
     });
     return mapCompany(data);
   },
@@ -44,7 +44,7 @@ export const companiesApi = {
       phone: payload.phone,
       email: payload.email,
       cnpj: payload.cnpj,
-      resposible: payload.responsible,
+      responsible: payload.responsible,
     });
     return mapCompany(data);
   },

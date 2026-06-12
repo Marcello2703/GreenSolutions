@@ -37,31 +37,15 @@ namespace GreenSolutions.Controllers
             if (budget == null)
                 return NotFound("Orçamento não encontrado.");
 
-            var budgetDTO = new BudgetResponseDTO
-            {
-                Id = budget.Id,
-                CreatedAt = budget.CreatedAt,
-                TotalPrice = budget.TotalPrice,
-                ClientName = budget.Client.Name,
-                CompanyName = budget.Company.Name,
-                UserName = budget.User.Name,
-                Items = budget.Items.Select(i => new BudgetItemResponseDTO
-                {
-                    ProductId = i.ProductId,
-                    ProductName = i.Product.Name,
-                    Quantity = i.Quantity,
-                    UnitPrice = i.UnitPrice,
-                    TotalPrice = i.TotalPrice
-                }).ToList()
-            };
+            var budgetResponse = FormatBudgetResponse(budget);
 
-            return Ok(budgetDTO);
+            return Ok(budgetResponse);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetBudgets()
         {
-            var budgets = await _appDbContext.BudgetsDB
+            var budgets = await _appDbContext.BudgetsDB.AsNoTracking()
                 .Include(b => b.Client)
                 .Include(b => b.Company)
                 .Include(b => b.User)
@@ -70,17 +54,7 @@ namespace GreenSolutions.Controllers
                 .OrderByDescending(b => b.CreatedAt)
                 .ToListAsync();
 
-            var budgetsDTO = budgets.Select(b => new BudgetResponseDTO
-            {
-                Id = b.Id,
-                UserName = b.User.Name,
-                ClientName = b.Client.Name,
-                CompanyName = b.Company.Name,
-                TotalPrice = b.TotalPrice,
-                CreatedAt = b.CreatedAt,
-            }).ToList();
-
-            //add items to the response
+            var budgetsDTO = budgets.Select(b => FormatBudgetResponse(b)).ToList();
 
             return Ok(budgetsDTO);
         }
@@ -115,16 +89,26 @@ namespace GreenSolutions.Controllers
 
             //Recupera os produtos do orçamento para calcular os preços
             var productIds = dto.Items.Select(i => i.ProductId).Distinct().ToList();
-            var products = await _appDbContext.ProductsDB.Where(p => productIds.Contains(p.Id)).ToListAsync();
+            var products = await _appDbContext.ProductsDB.Where(p => productIds.Contains(p.Id)).ToDictionaryAsync(p => p.Id);
+
+            var missingProductIds = productIds
+                .Where(id => !products.ContainsKey(id))
+                .ToList();
+
+            if (missingProductIds.Count > 0)
+                return NotFound($"Produtos nao encontrados: {string.Join(", ", missingProductIds)}.");
 
             var budget = new Budget
             {
-                UserId = dto.UserId,
+                UserId = user.Id,
                 User = user,
-                ClientId = dto.ClientId,
+                UserNameSnapshot = user.Name,
+                ClientId = client.Id,
                 Client = client,
-                CompanyId = dto.CompanyId,
+                ClientNameSnapshot = client.Name,
+                CompanyId = company.Id,
                 Company = company,
+                CompanyNameSnapshot = company.Name,
                 Items = new List<BudgetItem>()
             };
 
@@ -132,16 +116,14 @@ namespace GreenSolutions.Controllers
 
             foreach (var item in dto.Items)
             {
-                var product = products.First(p => p.Id == item.ProductId);
-                if (product == null)
-                {
-                    return NotFound($"Produto com ID {item.ProductId} não encontrado.");
-                }
+                var product = products[item.ProductId];
                 var unitPrice = _pricingService.Calculate(product.BasePrice, client.State);
                 var totalPrice = unitPrice * item.Quantity;
                 budget.Items.Add(new BudgetItem
                 {
                     ProductId = item.ProductId,
+                    ProductIdSnapshot = product.Id,
+                    ProductNameSnapshot = product.Name,
                     Quantity = item.Quantity,
                     UnitPrice = unitPrice,
                     TotalPrice = totalPrice
@@ -154,35 +136,26 @@ namespace GreenSolutions.Controllers
             _appDbContext.BudgetsDB.Add(budget);
             await _appDbContext.SaveChangesAsync();
 
-            var responseDTO = new BudgetResponseDTO
-            {
-                Id = budget.Id,
-                CreatedAt = budget.CreatedAt,
-                TotalPrice = budget.TotalPrice,
-                ClientName = budget.Client.Name,
-                CompanyName = budget.Company.Name,
-                UserName = budget.User.Name,
-                Items = budget.Items.Select(i => new BudgetItemResponseDTO
-                {
-                    ProductId = i.ProductId,
-                    ProductName = products.First(p => p.Id == i.ProductId).Name,
-                    Quantity = i.Quantity,
-                    UnitPrice = i.UnitPrice,
-                    TotalPrice = i.TotalPrice
-                }).ToList()
-            };
+            var createdBudget = await _appDbContext.BudgetsDB
+                .AsNoTracking()
+                .Include(b => b.Client)
+                .Include(b => b.Company)
+                .Include(b => b.User)
+                .Include(b => b.Items)
+                    .ThenInclude(i => i.Product)
+                .FirstAsync(b => b.Id == budget.Id);
 
-            return Ok(responseDTO);
+            return CreatedAtAction(nameof(GetBudgetById), new { id = createdBudget.Id }, FormatBudgetResponse(createdBudget));
         }
 
         //mover depois pra outra controller e filtras os dados enviados pro front
         [HttpGet("reference-data")]
         public async Task<IActionResult> GetReferenceData()
         {
-            var users = await _appDbContext.UsersDB.ToListAsync();
-            var companies = await _appDbContext.CompaniesDB.ToListAsync();
-            var clients = await _appDbContext.ClientsDB.ToListAsync();
-            var products = await _appDbContext.ProductsDB.ToListAsync();
+            var users = await _appDbContext.UsersDB.AsNoTracking().ToListAsync();
+            var companies = await _appDbContext.CompaniesDB.AsNoTracking().ToListAsync();
+            var clients = await _appDbContext.ClientsDB.AsNoTracking().ToListAsync();
+            var products = await _appDbContext.ProductsDB.AsNoTracking().ToListAsync();
 
             var response = new
             {
@@ -195,16 +168,41 @@ namespace GreenSolutions.Controllers
             return Ok(response);
         }
 
-        // PUT api/<BudgetController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        // DELETE api/<BudgetController>/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var budget = await _appDbContext.BudgetsDB.FindAsync(id);
+            if (budget == null)
+            {
+                return NotFound("Orçamento não encontrado na base.");
+            }
 
-        //// DELETE api/<BudgetController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+            _appDbContext.BudgetsDB.Remove(budget);
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok($"Budget #{id} deletado.");
+        }
+
+        private static BudgetResponseDTO FormatBudgetResponse(Budget budget)
+        {
+            return new BudgetResponseDTO
+            {
+                Id = budget.Id,
+                CreatedAt = budget.CreatedAt,
+                TotalPrice = budget.TotalPrice,
+                ClientName = budget.Client?.Name ?? budget.ClientNameSnapshot,
+                CompanyName = budget.Company?.Name ?? budget.CompanyNameSnapshot,
+                UserName = budget.User?.Name ?? budget.UserNameSnapshot,
+                Items = budget.Items.Select(i => new BudgetItemResponseDTO
+                {
+                    ProductId = i.ProductId ?? i.ProductIdSnapshot,
+                    ProductName = i.Product?.Name ?? i.ProductNameSnapshot,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    TotalPrice = i.TotalPrice
+                }).ToList()
+            };
+        }
     }
 }
