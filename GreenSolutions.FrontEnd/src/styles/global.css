@@ -1,0 +1,177 @@
+:root {
+    font-family: "Segoe UI", sans-serif;
+    color: #1f2c20;
+    background: #f8fafc;
+  }
+  
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  a { color: inherit; }
+  
+  button, input {
+    font: inherit;
+  }
+  
+  .app-shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+  
+  .app-sidebar,
+  .admin-sidebar {
+    padding: 24px;
+    background: #1f2c20;
+    color: white;
+  }
+  
+  .brand {
+    margin-bottom: 32px;
+  }
+  
+  .nav-list {
+    display: grid;
+    gap: 12px;
+  }
+  
+  .nav-link {
+    color: #cbe1cf;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f8f8f81c;
+  }
+  
+  .nav-link--active {
+    background: #BFE3C0;
+    color: #1f2c20;
+  }
+  
+  .content {
+    padding: 24px;
+  }
+
+  .page-stack {
+    display: grid;
+    gap: 18px;
+  }
+  
+  .section-card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .tab-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tab-link {
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #1f2c20;
+    font-weight: 600;
+  }
+
+  .tab-link--active {
+    background: #BFE3C0;
+    color: white;
+  }
+
+  .tab-panel {
+    min-width: 0;
+  }
+  
+  .form-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .form-grid input,
+  .form-grid select,
+  .form-grid textarea {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: white;
+    color: #1f2c20;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .actions button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #BFE3C0;
+    color: white;
+  }
+  
+  .actions button[type="button"] {
+    background: #1f2c20;
+    color: white;
+    cursor: pointer;
+  }
+
+  .primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: #1f2c20;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px dashed #94b8a3;
+    background: #f8fafc;
+  }
+
+  .empty-state p {
+    margin-bottom: 0;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+  }
+  .data-table select,
+  .data-table button,
+  .data-table input {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: white;
+    color: #1f2c20;
+  }
