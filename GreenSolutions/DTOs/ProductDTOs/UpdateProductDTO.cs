@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GreenSolutions.Models
+namespace GreenSolutions.DTOs.ProductDTOs
 {
-    public class Product
+    public class UpdateProductDTO
     {
-        [Key]
-        public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
-        [Required]
         public decimal BasePrice { get; set; }
     }
 }

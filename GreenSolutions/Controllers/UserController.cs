@@ -35,6 +35,10 @@ namespace GreenSolutions.Controllers
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             var users = await _appDbContext.UsersDB.ToListAsync();
+            if(!users.Any())
+            {
+                return NotFound("Nenhum usuario encontrado.");
+            }
 
             return Ok(users);
         }
