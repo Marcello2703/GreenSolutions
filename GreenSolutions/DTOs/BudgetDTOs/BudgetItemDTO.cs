@@ -1,8 +1,9 @@
-﻿namespace GreenSolutions.DTOs.BudgetDTOs
+namespace GreenSolutions.DTOs.BudgetDTOs
 {
     public class BudgetItemDTO
     {
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
+        public int? OrderItemId { get; set; }
         public int Quantity { get; set; }
     }
 }

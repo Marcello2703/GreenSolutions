@@ -65,6 +65,9 @@ namespace GreenSolutions.Controllers
                 return NotFound("Empresa não encontrada.");
             }
 
+            if (await _appDbContext.OrdersDB.AnyAsync(order => order.CompanyId == id))
+                return Conflict("A empresa não pode ser excluída enquanto possuir pedidos relacionados.");
+
             _appDbContext.CompaniesDB.Remove(company);
 
             await _appDbContext.SaveChangesAsync();

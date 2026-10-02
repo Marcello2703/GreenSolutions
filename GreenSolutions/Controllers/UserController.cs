@@ -70,7 +70,7 @@ namespace GreenSolutions.Controllers
             return StatusCode(201, updatedUser);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _appDbContext.UsersDB.FindAsync(id);

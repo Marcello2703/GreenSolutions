@@ -17,6 +17,10 @@ namespace GreenSolutions.Persistence
         public DbSet<BudgetItem> BudgetItemsDB { get; set; }
         public DbSet<Company> CompaniesDB { get; internal set; }
 
+        public DbSet<Order> OrdersDB { get; set; }
+
+        public DbSet<OrderItem> OrderItemsDB { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -37,6 +41,11 @@ namespace GreenSolutions.Persistence
                 .IsRequired();
 
             modelBuilder.Entity<BudgetItem>()
+                .Property(i => i.ProductNameSnapshot)
+                .HasColumnType("longtext")
+                .IsRequired();
+
+            modelBuilder.Entity<OrderItem>()
                 .Property(i => i.ProductNameSnapshot)
                 .HasColumnType("longtext")
                 .IsRequired();
@@ -63,6 +72,48 @@ namespace GreenSolutions.Persistence
                 .HasOne(i => i.Product)
                 .WithMany()
                 .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Client)
+                .WithMany()
+                .HasForeignKey(o => o.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Company)
+                .WithMany()
+                .HasForeignKey(o => o.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.ResponsibleUser)
+                .WithMany()
+                .HasForeignKey(o => o.ResponsibleUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne(i => i.Order)
+                .HasForeignKey(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(i => i.Product)
+                .WithMany()
+                .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Budget>()
+                .HasOne(b => b.Order)
+                .WithMany(o => o.Budgets)
+                .HasForeignKey(b => b.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<BudgetItem>()
+                .HasOne(i => i.OrderItem)
+                .WithMany(i => i.BudgetItems)
+                .HasForeignKey(i => i.OrderItemId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
