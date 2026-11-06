@@ -1,13 +1,11 @@
-﻿namespace GreenSolutions.DTOs.BudgetDTOs
+namespace GreenSolutions.DTOs.BudgetDTOs
 {
     public class CreateBudgetDTO
     {
         public int UserId { get; set; }
-        public int ClientId { get; set; }
-
-        public int CompanyId { get; set; }
-
-        public List<BudgetItemDTO> Items { get; set; }
-
+        public int? ClientId { get; set; }
+        public int? CompanyId { get; set; }
+        public int? OrderId { get; set; }
+        public List<BudgetItemDTO> Items { get; set; } = new();
     }
 }

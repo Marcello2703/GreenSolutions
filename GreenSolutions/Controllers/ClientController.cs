@@ -57,9 +57,10 @@ namespace GreenSolutions.Controllers
 
             client.Name = updatedClient.Name;
             client.CNPJ = updatedClient.CNPJ;
-            client.Adress = updatedClient.Adress;
+            client.Address = updatedClient.Adress;
             client.Phone = updatedClient.Phone;
             client.State = updatedClient.State;
+            //client.Email = updatedClient.Email;
 
             _appDbContext.Entry(client).CurrentValues.SetValues(updatedClient);
             await _appDbContext.SaveChangesAsync();
@@ -67,7 +68,7 @@ namespace GreenSolutions.Controllers
             return StatusCode(201, updatedClient);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
             var client = await _appDbContext.ClientsDB.FindAsync(id);
@@ -75,6 +76,9 @@ namespace GreenSolutions.Controllers
             {
                 return NotFound("Cliente não encontrado.");
             }
+
+            if (await _appDbContext.OrdersDB.AnyAsync(order => order.ClientId == id))
+                return Conflict("O cliente não pode ser excluído enquanto possuir pedidos relacionados.");
 
             _appDbContext.ClientsDB.Remove(client);
             await _appDbContext.SaveChangesAsync();

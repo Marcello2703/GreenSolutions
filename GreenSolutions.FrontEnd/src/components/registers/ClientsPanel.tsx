@@ -1,4 +1,4 @@
-import { clientsApi } from "../../services/clients";
+import { clientsApi } from "../../services/clientsService";
 import { useCrudSection } from "../../hooks/useCrudSection";
 import type { ClientFormData } from "../../types/Client";
 

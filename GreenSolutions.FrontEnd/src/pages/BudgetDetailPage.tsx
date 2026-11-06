@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { budgetsApi } from "../services/budgets";
-import {  } from "../services/budgets";
+import { budgetsApi } from "../services/budgetsService";
+import {  } from "../services/budgetsService";
 import type { BudgetDetail, BudgetDetailItem } from "../types/Budget";
 
 export function BudgetDetailPage() {

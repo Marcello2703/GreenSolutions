@@ -1,4 +1,4 @@
-import { productsApi } from "../../services/products";
+import { productsApi } from "../../services/productsService";
 import { useCrudSection } from "../../hooks/useCrudSection";
 import type { ProductFormData } from "../../types/Product";
 

@@ -47,6 +47,12 @@ namespace GreenSolutions.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(65,30)");
 
@@ -63,6 +69,8 @@ namespace GreenSolutions.Migrations
 
                     b.HasIndex("CompanyId");
 
+                    b.HasIndex("OrderId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("BudgetsDB");
@@ -77,6 +85,9 @@ namespace GreenSolutions.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderItemId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ProductId")
@@ -102,6 +113,8 @@ namespace GreenSolutions.Migrations
 
                     b.HasIndex("BudgetId");
 
+                    b.HasIndex("OrderItemId");
+
                     b.HasIndex("ProductId");
 
                     b.ToTable("BudgetItemsDB");
@@ -115,12 +128,15 @@ namespace GreenSolutions.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Adress")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("CNPJ")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
@@ -175,6 +191,86 @@ namespace GreenSolutions.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CompaniesDB");
+                });
+
+            modelBuilder.Entity("GreenSolutions.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("ResponsibleUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShippingType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("ResponsibleUserId");
+
+                    b.ToTable("OrdersDB");
+                });
+
+            modelBuilder.Entity("GreenSolutions.Models.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ProductBasePriceSnapshot")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductIdSnapshot")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductNameSnapshot")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("RequestedQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItemsDB");
                 });
 
             modelBuilder.Entity("GreenSolutions.Models.Product", b =>
@@ -240,6 +336,11 @@ namespace GreenSolutions.Migrations
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("GreenSolutions.Models.Order", "Order")
+                        .WithMany("Budgets")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("GreenSolutions.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -248,6 +349,8 @@ namespace GreenSolutions.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Company");
+
+                    b.Navigation("Order");
 
                     b.Navigation("User");
                 });
@@ -260,6 +363,11 @@ namespace GreenSolutions.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GreenSolutions.Models.OrderItem", "OrderItem")
+                        .WithMany("BudgetItems")
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("GreenSolutions.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -267,12 +375,70 @@ namespace GreenSolutions.Migrations
 
                     b.Navigation("Budget");
 
+                    b.Navigation("OrderItem");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("GreenSolutions.Models.Order", b =>
+                {
+                    b.HasOne("GreenSolutions.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GreenSolutions.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GreenSolutions.Models.User", "ResponsibleUser")
+                        .WithMany()
+                        .HasForeignKey("ResponsibleUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("ResponsibleUser");
+                });
+
+            modelBuilder.Entity("GreenSolutions.Models.OrderItem", b =>
+                {
+                    b.HasOne("GreenSolutions.Models.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GreenSolutions.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Order");
+
                     b.Navigation("Product");
                 });
 
             modelBuilder.Entity("GreenSolutions.Models.Budget", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("GreenSolutions.Models.Order", b =>
+                {
+                    b.Navigation("Budgets");
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("GreenSolutions.Models.OrderItem", b =>
+                {
+                    b.Navigation("BudgetItems");
                 });
 #pragma warning restore 612, 618
         }

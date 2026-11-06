@@ -175,3 +175,107 @@
     background: white;
     color: #1f2c20;
   }
+
+  .order-status-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .order-status-summary .status-card {
+    --status-icon-color: #b77912;
+    --status-icon-background: #fff5d6;
+    --status-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z'/%3E%3Cpath d='M14 2v6h6M8 13h8M8 17h6'/%3E%3C/svg%3E");
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: center;
+    gap: 4px 16px;
+    min-height: 108px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(31, 44, 32, 0.025);
+  }
+
+  .order-status-summary .status-card::before,
+  .order-status-summary .status-card::after {
+    content: "";
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .order-status-summary .status-card::before {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--status-icon-background);
+  }
+
+  .order-status-summary .status-card::after {
+    width: 24px;
+    height: 24px;
+    background: var(--status-icon-color);
+    mask: var(--status-icon) center / contain no-repeat;
+  }
+
+  /* The cards follow the existing order: open, partially budgeted, fully budgeted. */
+  .order-status-summary .status-card:nth-child(2) {
+    --status-icon-color: #2583eb;
+    --status-icon-background: #e8f2ff;
+    --status-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+  }
+
+  .order-status-summary .status-card:nth-child(3) {
+    --status-icon-color: #245b38;
+    --status-icon-background: #e4f5e9;
+    --status-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 4 4L19 6'/%3E%3C/svg%3E");
+  }
+
+  .order-status-summary .status-card p {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    color: #526456;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .order-status-summary .status-card strong {
+    grid-column: 2;
+    grid-row: 2;
+    color: #1f2c20;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .order-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.order-summary {
+  padding: 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.order-summary dt {
+  color: #526456;
+}
+
+.order-summary dd {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}

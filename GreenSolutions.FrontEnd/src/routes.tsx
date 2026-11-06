@@ -5,6 +5,8 @@ import { BudgetListPage } from "./pages/BudgetListPage";
 import { BudgetCreatePage } from "./pages/BudgetCreatePage";
 import { CadastrosPage } from "./pages/CadastrosPage";
 import { ProductsPage } from "./pages/ProductsPage";
+import { OrderListPage } from "./pages/OrderListPage";
+import { OrderDetailPage } from "./pages/OrderDetailPage";
 
 function AppLayout() {
   return (
@@ -16,6 +18,8 @@ function AppLayout() {
           <Route path="/cadastros" element={<Navigate to="/cadastros/clientes" replace />} />
           <Route path="/cadastros/:section" element={<CadastrosPage />} />
           <Route path="/produtos" element={<ProductsPage />} />
+          <Route path="/pedidos" element={<OrderListPage />} />
+          <Route path="/pedidos/:id" element={<OrderDetailPage />} />
           <Route path="/orcamentos" element={<BudgetListPage />} />
           <Route path="/orcamentos/novo" element={<BudgetCreatePage />} />
           <Route path="/orcamentos/:id" element={<BudgetDetailPage />} />
