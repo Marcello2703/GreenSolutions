@@ -1,4 +1,4 @@
-import { companiesApi } from "../../services/companies";
+import { companiesApi } from "../../services/companiesService";
 import { useCrudSection } from "../../hooks/useCrudSection";
 import type { CompanyFormData } from "../../types/Company";
 

@@ -1,11 +1,13 @@
-import type { BudgetItem } from "./BudgetItem";
-
 export type Budget = {
-    budgetId: number;
-    userId: number;
-    clientId: number;
-    companyId: number;
-    budgetItems: BudgetItem[]
+    id: number;
+    userName: string;
+    clientName: string;
+    companyName: string;
+    orderId: number;
+    createdAt: string;
+    totalPrice: number;
+    status: number;
+    items: BudgetDetailItem[];
 }
 
 export type BudgetSummary = {
@@ -13,7 +15,9 @@ export type BudgetSummary = {
     createdAt: string;
     clientName: string;
     companyName: string;
+    orderId: number;
     userName: string;
+    status: number;
     totalPrice: number;
 };
 
@@ -32,5 +36,7 @@ export type BudgetDetail = {
   clientName: string;
   companyName: string;
   userName: string;
+  status: number;
+  orderId: number;
   items: BudgetDetailItem[];
 };

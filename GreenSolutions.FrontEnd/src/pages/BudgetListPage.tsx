@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { budgetsApi } from "../services/budgets";
+import { budgetsApi } from "../services/budgetsService";
 import type { BudgetSummary } from "../types/Budget";
 
 
@@ -72,6 +72,7 @@ export function BudgetListPage() {
               <th>Data</th>
               <th>Cliente</th>
               <th>Empresa</th>
+              <th>Pedido</th>
               <th>Responsável</th>
               <th>Total</th>
               <th></th>
@@ -80,10 +81,11 @@ export function BudgetListPage() {
           <tbody>
             {budgets.map((budget) => (
               <tr key={budget.id}>
-                <td>{budget.id}</td>
+                <td>#{budget.id}</td>
                 <td>{new Date(budget.createdAt).toLocaleDateString("pt-BR")}</td>
                 <td>{budget.clientName}</td>
                 <td>{budget.companyName}</td>
+                <td>#{budget.orderId || 'N/A'}</td>
                 <td>{budget.userName}</td>
                 <td>
                   {budget.totalPrice.toLocaleString("pt-BR", {

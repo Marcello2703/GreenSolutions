@@ -247,8 +247,9 @@ namespace GreenSolutions.Controllers
             var companies = await _appDbContext.CompaniesDB.AsNoTracking().ToListAsync();
             var clients = await _appDbContext.ClientsDB.AsNoTracking().ToListAsync();
             var products = await _appDbContext.ProductsDB.AsNoTracking().ToListAsync();
+            var orders = await _appDbContext.OrdersDB.AsNoTracking().ToListAsync();
 
-            return Ok(new { users, companies, clients, products });
+            return Ok(new { users, companies, clients, products, orders });
         }
 
         [HttpDelete("{id:int}")]

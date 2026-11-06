@@ -3,6 +3,7 @@ using GreenSolutions.DTOs.OrderDTOs;
 using GreenSolutions.Enums;
 using GreenSolutions.Models;
 using GreenSolutions.Persistence;
+using GreenSolutions.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +14,12 @@ namespace GreenSolutions.Controllers
     public class OrderController : ControllerBase
     {
         private readonly AppDbContext _appDbContext;
+        private readonly PricingService _pricingService;
 
-        public OrderController(AppDbContext appDbContext)
+        public OrderController(AppDbContext appDbContext, PricingService pricingService)
         {
             _appDbContext = appDbContext;
+            _pricingService = pricingService;
         }
 
         [HttpGet]
@@ -26,7 +29,7 @@ namespace GreenSolutions.Controllers
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
 
-            return Ok(orders.Select(FormatOrderResponse));
+            return Ok(orders.Select(o => FormatOrderResponse(o, _pricingService)));
         }
 
         [HttpGet("{id:int}")]
@@ -38,7 +41,7 @@ namespace GreenSolutions.Controllers
             if (order == null)
                 return NotFound("Pedido não encontrado.");
 
-            return Ok(FormatOrderResponse(order));
+            return Ok(FormatOrderResponse(order, _pricingService));
         }
 
         [HttpPost]
@@ -114,7 +117,7 @@ namespace GreenSolutions.Controllers
             return CreatedAtAction(
                 nameof(GetOrderById),
                 new { id = createdOrder.Id },
-                FormatOrderResponse(createdOrder));
+                FormatOrderResponse(createdOrder, _pricingService));
         }
 
         [HttpDelete("{id:int}")]
@@ -154,7 +157,7 @@ namespace GreenSolutions.Controllers
                         .ThenInclude(i => i.Product);
         }
 
-        private static OrderResponseDTO FormatOrderResponse(Order order)
+        private static OrderResponseDTO FormatOrderResponse(Order order, PricingService pricingService)
         {
             return new OrderResponseDTO
             {
@@ -163,12 +166,16 @@ namespace GreenSolutions.Controllers
                 DueDate = order.DueDate,
                 Status = order.Status,
                 ShippingType = order.ShippingType,
-                TotalPrice = order.Budgets
-                    .Where(budget => IsAllocatingBudgetStatus(budget.Status))
-                    .Sum(budget => budget.TotalPrice),
+                TotalPrice = order.Items.Sum(item =>
+                    pricingService.Calculate(
+                        item.ProductBasePriceSnapshot, order.Client.State) * item.RequestedQuantity),
+                BudgetedPrice = order.Budgets.Where(budget => IsAllocatingBudgetStatus(budget.Status)).Sum(budget => budget.TotalPrice),
+                ClientId = order.ClientId,
                 ClientName = order.Client.Name,
+                CompanyId = order.CompanyId,
                 CompanyName = order.Company.Name,
                 ResponsibleUser = order.ResponsibleUser?.Name,
+                Description = order.Description,
                 OrderItems = order.Items.Select(item => new OrderItemResponseDTO
                 {
                     OrderItemId = item.Id,

@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { http } from "../services/http";
+import { useSearchParams } from "react-router-dom";
 import type { Client } from "../types/Client";
 import type { Company } from "../types/Company";
 import type { Product } from "../types/Product";
+import type { Order } from "../types/Order";
 import type { CreateBudgetPayload } from "../types/CreateBudgetPayload";
+import { ordersApi } from "../services/ordersService";
 
 type User = {
   id: number;
@@ -15,6 +18,7 @@ type BudgetReferenceData = {
   users: User[];
   clients: Client[];
   companies: Company[];
+  orders: Order[];
   products: Product[];
 };
 
@@ -27,6 +31,7 @@ const emptyForm: CreateBudgetPayload = {
   userId: 0,
   clientId: 0,
   companyId: 0,
+  orderId: 0,
   items: [],
 };
 
@@ -34,10 +39,13 @@ export function BudgetCreatePage() {
 
   const navigate = useNavigate();
   const [reference, setReference] = useState<BudgetReferenceData | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [form, setForm] = useState<CreateBudgetPayload>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [searchParams] = useSearchParams();
+  const orderIdFromQuery = searchParams.get("orderId");
 
   useEffect(() => {
     let cancelled = false;
@@ -45,18 +53,50 @@ export function BudgetCreatePage() {
     async function load(){
       setLoading(true);
       try {
-        const { data } = await http.get<BudgetReferenceData>("/budgets/reference-data");
-        if(!cancelled){
-          setReference(data);
-          setForm((current) => ({
-            userId: current.userId || data.users[0]?.id || 0,
-            clientId: current.clientId || 0,
-            companyId: current.companyId || 0,
-            items: current.items.length ? current.items : [{ productId: data.products[0]?.id || 0, quantity: 1 }],
-          }));
+        const orderId = orderIdFromQuery===null ? null : Number(orderIdFromQuery);
+        if(orderId != null && !Number.isSafeInteger(orderId) || (orderId !=null && orderId <= 0)){
+          setError("ID do pedido inválido.");
+          return;
         }
+
+        const [referenceResponse, orderResponse] = await Promise.all([
+          http.get<BudgetReferenceData>("/budgets/reference-data"),
+          orderId != null ? ordersApi.getById(orderId) : Promise.resolve(null),
+        ]);
+        
+        const data = referenceResponse.data;
+
+        const items = orderResponse
+        ? orderResponse.orderItems
+            .map((item) => ({
+              orderItemId: item.orderItemId,
+              productId: item.productId,
+              quantity: item.requestedQuantity - item.budgetedQuantity,
+            }))
+            .filter((item) => item.quantity > 0)
+        : data.products.length > 0
+          ? [{ productId: data.products[0].id, orderItemId: 0, quantity: 1 }]
+          : [];
+
+        if(cancelled) return;
+        
+        setReference(referenceResponse.data);
+        setOrder(orderResponse);
+        setForm({
+          ...emptyForm,
+          userId: data.users[0]?.id ?? 0,
+          clientId: orderResponse?.clientId ?? 0,
+          companyId: orderResponse?.companyId ?? 0,
+          orderId: orderResponse?.id ?? 0,
+          items,
+        });
+
+        if(orderResponse && orderResponse.orderItems.length === 0){
+          setError("O pedido selecionado não possui itens disponíveis para orçamento.");
+        }
+        
       }catch{
-        if (!cancelled) setError("Nao foi possivel carregar os dados do formulario.");
+        if (!cancelled) setError("Não foi possivel carregar os dados do formulario.");
       } finally {
         if (!cancelled) setLoading(false);
     }
@@ -66,7 +106,7 @@ export function BudgetCreatePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [orderIdFromQuery]);
 
   const selectedClient = reference?.clients.find((client) => client.id === form.clientId);
 
@@ -105,7 +145,7 @@ export function BudgetCreatePage() {
   function addItem() {
     setForm((current) => ({
       ...current,
-      items: [...current.items, { productId: reference?.products[0]?.id || 0, quantity: 1 }],
+      items: [...current.items, { productId: reference?.products[0]?.id || 0, orderItemId: 0, quantity: 1 }],
     }));
   }
 
@@ -120,6 +160,30 @@ export function BudgetCreatePage() {
     event.preventDefault();
     setError("");
 
+    const hasInvalidItem = form.items.some((item) => {
+      if (!Number.isSafeInteger(item.quantity) || item.quantity <= 0) {
+        return true;
+      }
+
+      if (!order) return false;
+
+      const originalItem = order.orderItems.find(
+        (original) => original.orderItemId === item.orderItemId
+      );
+
+      if (!originalItem) return true;
+
+      const remaining =
+        originalItem.requestedQuantity - originalItem.budgetedQuantity;
+
+      return item.quantity > remaining;
+    });
+
+    if (form.items.length === 0 || hasInvalidItem) {
+      setError("Informe quantidades válidas, dentro do saldo disponível.");
+      return;
+    }
+
     if (!form.userId || !form.clientId || !form.companyId || form.items.length === 0) {
       setError("Preencha usuario, cliente, empresa e pelo menos um item.");
       return;
@@ -130,7 +194,7 @@ export function BudgetCreatePage() {
       const { data } = await http.post<{ id: number }>("/budgets", form);
       navigate(`/orcamentos/${data.id}`);
     } catch {
-      setError("Nao foi possivel criar o orcamento.");
+      setError("Não foi possível criar o orçamento.");
     } finally {
       setSaving(false);
     }
@@ -145,7 +209,7 @@ export function BudgetCreatePage() {
           <div>
             <h1>Novo orçamento</h1>
             <h2>Olá Usuário,</h2>
-            <p>Selecione os dados principais e monte os itens do orcamento.</p>
+            <p>Selecione os dados principais e monte os itens do orçamento.</p>
           </div>
         </div>
 
@@ -153,6 +217,11 @@ export function BudgetCreatePage() {
           <select value={form.userId} onChange={(e) => setForm({ ...form, userId: Number(e.target.value) })}>
             <option value={0}>Selecione o usuario</option>
             {reference?.users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
+          </select>
+
+          <select value={form.orderId} onChange={(e) => setForm({ ...form, orderId: Number(e.target.value) })}>
+            <option value={0}>Selecione o pedido</option>
+            {reference?.orders.map((order) => <option key={order.id} value={order.id}>#{order.id} - {order.clientName}</option>)}
           </select>
 
           <select value={form.clientId} onChange={(e) => setForm({ ...form, clientId: Number(e.target.value) })}>
